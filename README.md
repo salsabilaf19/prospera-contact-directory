@@ -14,4 +14,29 @@ The **Prospera Inquiry Portal** is a provides a public facing portal for institu
 
 ## How to Run Locally
 
-1. Create and activate virtual environment:...
+### Prerequisites
+* Python 3.9+ installed on your system.
+
+### Setup Steps
+
+1. **Clone the repository:**
+   ```bash
+   git clone [https://github.com/YOUR_USERNAME/prospera-contact-directory.git](https://github.com/YOUR_USERNAME/prospera-contact-directory.git)
+   cd prospera-contact-directory
+
+2. Create and activate a virtual environment:
+    python3 -m venv venv
+    source venv/bin/activate
+    # On Windows use: venv\Scripts\activate
+3. Install dependencies:
+    pip install fastapi uvicorn "pydantic[email-validator]"
+4. Start the development server:
+    uvicorn main:app --reload
+
+    (Note: The SQLite database file contacts.db will automatically be generated on application startup).
+5. Access the application:
+    Open your browser and navigate to http://127.0.0.1:8000
+
+🔐 Admin Credentials
+* Username: admin
+* Password: password123
