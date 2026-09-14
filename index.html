@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prospera | Contact Application</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-50 text-gray-800 font-sans min-h-screen">
+
+    <!-- Navigation Header -->
+    <nav class="bg-blue-900 text-white shadow-md py-4 px-6 flex justify-between items-center">
+        <div>
+            <h1 class="text-xl font-bold tracking-wide">Prospera Inquiry Portal</h1>
+            <p class="text-xs text-blue-200">Australia Indonesia Partnership for Economic Development</p>
+        </div>
+        <div id="nav-actions">
+            <button id="login-btn" onclick="openLoginModal()"
+                class="bg-blue-700 hover:bg-blue-600 px-4 py-2 rounded text-sm font-semibold transition">
+                Admin Login
+            </button>
+            <button id="logout-btn" onclick="logout()"
+                class="hidden bg-red-600 hover:bg-red-500 px-4 py-2 rounded text-sm font-semibold transition">
+                Logout Admin
+            </button>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto p-6">
+        <div id="toast" class="hidden mb-6 p-4 rounded text-white font-medium text-sm transition"></div>
+        <section id="public-form-section"
+            class="bg-white p-8 rounded-lg shadow-sm border border-gray-200 mb-8 max-w-2xl mx-auto">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Submit Institutional Inquiry</h2>
+            <p class="text-sm text-gray-600 mb-6">Please fill out your contact information and details regarding your
+                partnership inquiry.</p>
+
+            <form id="contact-form" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium mb-1">Full Name</label>
+                    <input type="text" id="public-name" required
+                        class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Email Address</label>
+                    <input type="email" id="public-email" required
+                        class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Institution / Organization</label>
+                    <input type="text" id="public-institution" placeholder="e.g. Ministry of Finance, CMEA, Independent"
+                        required
+                        class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Subject</label>
+                    <input type="text" id="public-subject" required
+                        class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
+                </div>
+                <div>
+                    <label class="block text-sm font-medium mb-1">Message</label>
+                    <textarea id="public-message" rows="4" required
+                        class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"></textarea>
+                </div>
+                <button type="submit"
+                    class="w-full bg-blue-900 hover:bg-blue-800 text-white font-semibold py-2.5 rounded text-sm transition">
+                    Submit Contact Form
+                </button>
+            </form>
+        </section>
+
+        <!-- ADMIN VIEW -->
+        <section id="admin-dashboard-section" class="hidden">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900">Admin CRUD Dashboard</h2>
+                    <p class="text-sm text-gray-600">Manage, edit, or remove contact submissions.</p>
+                </div>
+            </div>
+
+            <!-- Contacts Table -->
+            <div class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-gray-100 border-b border-gray-200 text-gray-700 uppercase text-xs">
+                        <tr>
+                            <th class="p-4">ID</th>
+                            <th class="p-4">Contact</th>
+                            <th class="p-4">Institution</th>
+                            <th class="p-4">Subject & Message</th>
+                            <th class="p-4">Status</th>
+                            <th class="p-4 text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="contacts-table-body" class="divide-y divide-gray-200">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <!-- LOGIN MODAL -->
+    <div id="login-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
+            <h3 class="text-lg font-bold mb-4">Admin Authentication</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Username</label>
+                    <input type="text" id="login-username" value="admin" class="w-full border p-2 rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Password</label>
+                    <input type="password" id="login-password" value="password123"
+                        class="w-full border p-2 rounded text-sm">
+                </div>
+                <div class="flex justify-end gap-2 mt-4">
+                    <button onclick="closeLoginModal()"
+                        class="px-4 py-2 border rounded text-xs font-semibold">Cancel</button>
+                    <button onclick="performLogin()"
+                        class="px-4 py-2 bg-blue-900 text-white rounded text-xs font-semibold">Login</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- EDIT MODAL -->
+    <div id="edit-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
+            <h3 class="text-lg font-bold mb-4">Edit Contact Record</h3>
+            <form id="edit-form" onsubmit="handleEditSubmit(event)" class="space-y-3">
+                <input type="hidden" id="edit-id">
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Full Name</label>
+                    <input type="text" id="edit-name" required class="w-full border p-2 rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Email</label>
+                    <input type="email" id="edit-email" required class="w-full border p-2 rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Institution</label>
+                    <input type="text" id="edit-institution" required class="w-full border p-2 rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Subject</label>
+                    <input type="text" id="edit-subject" required class="w-full border p-2 rounded text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Status</label>
+                    <select id="edit-status" class="w-full border p-2 rounded text-sm">
+                        <option value="Pending">Pending</option>
+                        <option value="Reviewed">Reviewed</option>
+                        <option value="Resolved">Resolved</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold mb-1">Message</label>
+                    <textarea id="edit-message" rows="3" required class="w-full border p-2 rounded text-sm"></textarea>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeEditModal()"
+                        class="px-4 py-2 border rounded text-xs font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-900 text-white rounded text-xs font-semibold">Save
+                        Changes</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT INTEGRATION -->
+    <script>
+        let authToken = localStorage.getItem('admin_token') || null;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAuthState();
+        });
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `mb-6 p-4 rounded text-white font-medium text-sm transition ${isError ? 'bg-red-600' : 'bg-green-600'}`;
+            toast.classList.remove('hidden');
+            setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        // function checkAuthState() {
+        //   if (authToken) {
+        //     document.getElementById('login-btn').classList.add('hidden');
+        //     document.getElementById('logout-btn').classList.remove('hidden');
+        //     document.getElementById('admin-dashboard-section').classList.remove('hidden');
+        //     fetchContacts();
+        //   } else {
+        //     document.getElementById('login-btn').classList.remove('hidden');
+        //     document.getElementById('logout-btn').classList.add('hidden');
+        //     document.getElementById('admin-dashboard-section').classList.add('hidden');
+        //   }
+        // }
+
+        function checkAuthState() {
+            const publicForm = document.getElementById('public-form-section');
+            const loginBtn = document.getElementById('login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const adminDashboard = document.getElementById('admin-dashboard-section');
+
+            if (authToken) {
+                // Hide the form when logged in
+                loginBtn.classList.add('hidden');
+                publicForm.classList.add('hidden');
+                logoutBtn.classList.remove('hidden');
+                adminDashboard.classList.remove('hidden');
+                fetchContacts();
+            } else {
+                // Show the form when logged out
+                loginBtn.classList.remove('hidden');
+                publicForm.classList.remove('hidden');
+                logoutBtn.classList.add('hidden');
+                adminDashboard.classList.add('hidden');
+            }
+        }
+        // --- PUBLIC SUBMIT ---
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('public-name').value,
+                email: document.getElementById('public-email').value,
+                institution: document.getElementById('public-institution').value,
+                subject: document.getElementById('public-subject').value,
+                message: document.getElementById('public-message').value
+            };
+
+            const res = await fetch('/api/contacts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                showToast("Contact form submitted successfully!");
+                document.getElementById('contact-form').reset();
+                if (authToken) fetchContacts();
+            } else {
+                showToast("Failed to submit form.", true);
+            }
+        }
+
+        // --- AUTHENTICATION ---
+        function openLoginModal() { document.getElementById('login-modal').classList.remove('hidden'); }
+        function closeLoginModal() { document.getElementById('login-modal').classList.add('hidden'); }
+
+        async function performLogin() {
+            const username = document.getElementById('login-username').value;
+            const password = document.getElementById('login-password').value;
+
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                authToken = data.token;
+                localStorage.setItem('admin_token', authToken);
+                closeLoginModal();
+                checkAuthState();
+                showToast("Logged in as Admin");
+            } else {
+                showToast("Invalid Credentials", true);
+            }
+        }
+
+        function logout() {
+            authToken = null;
+            localStorage.removeItem('admin_token');
+            checkAuthState();
+            showToast("Logged out successfully");
+        }
+
+        // --- READ (READ ALL) ---
+        async function fetchContacts() {
+            const res = await fetch('/api/contacts', {
+                headers: { 'X-Auth-Token': authToken }
+            });
+
+            if (res.ok) {
+                const contacts = await res.json();
+                const tbody = document.getElementById('contacts-table-body');
+                tbody.innerHTML = '';
+
+                contacts.forEach(c => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+            <td class="p-4 font-bold text-gray-500">#${c.id}</td>
+            <td class="p-4">
+              <div class="font-semibold text-gray-900">${c.name}</div>
+              <div class="text-xs text-gray-500">${c.email}</div>
+            </td>
+            <td class="p-4">${c.institution}</td>
+            <td class="p-4">
+              <div class="font-medium text-gray-800">${c.subject}</div>
+              <div class="text-xs text-gray-500 truncate max-w-xs">${c.message}</div>
+            </td>
+            <td class="p-4">
+              <span class="px-2 py-1 text-xs rounded font-semibold ${c.status === 'Resolved' ? 'bg-green-100 text-green-800' :
+                            c.status === 'Reviewed' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800'
+                        }">${c.status}</span>
+            </td>
+            <td class="p-4 text-right space-x-2">
+              <button onclick='openEditModal(${JSON.stringify(c)})' class="text-blue-600 hover:text-blue-800 font-semibold text-xs">Edit</button>
+              <button onclick="deleteContact(${c.id})" class="text-red-600 hover:text-red-800 font-semibold text-xs">Delete</button>
+            </td>
+          `;
+                    tbody.appendChild(row);
+                });
+            }
+        }
+
+        // --- UPDATE ---
+        function openEditModal(c) {
+            document.getElementById('edit-id').value = c.id;
+            document.getElementById('edit-name').value = c.name;
+            document.getElementById('edit-email').value = c.email;
+            document.getElementById('edit-institution').value = c.institution;
+            document.getElementById('edit-subject').value = c.subject;
+            document.getElementById('edit-status').value = c.status;
+            document.getElementById('edit-message').value = c.message;
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+        function closeEditModal() { document.getElementById('edit-modal').classList.add('hidden'); }
+
+        async function handleEditSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('edit-id').value;
+            const payload = {
+                name: document.getElementById('edit-name').value,
+                email: document.getElementById('edit-email').value,
+                institution: document.getElementById('edit-institution').value,
+                subject: document.getElementById('edit-subject').value,
+                status: document.getElementById('edit-status').value,
+                message: document.getElementById('edit-message').value
+            };
+
+            const res = await fetch(`/api/contacts/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Auth-Token': authToken
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (res.ok) {
+                showToast("Record updated!");
+                closeEditModal();
+                fetchContacts();
+            } else {
+                showToast("Failed to update record", true);
+            }
+        }
+
+        // --- DELETE ---
+        async function deleteContact(id) {
+            if (!confirm("Are you sure you want to delete this contact entry?")) return;
+
+            const res = await fetch(`/api/contacts/${id}`, {
+                method: 'DELETE',
+                headers: { 'X-Auth-Token': authToken }
+            });
+
+            if (res.ok) {
+                showToast("Record deleted successfully");
+                fetchContacts();
+            } else {
+                showToast("Failed to delete record", true);
+            }
+        }
+    </script>
+</body>
+</html>
