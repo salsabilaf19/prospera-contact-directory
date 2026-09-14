@@ -21,7 +21,7 @@ The **Prospera Inquiry Portal** is a provides a public facing portal for institu
 
 1. **Clone the repository:**
    ```bash
-   git clone [https://github.com/YOUR_USERNAME/prospera-contact-directory.git](https://github.com/YOUR_USERNAME/prospera-contact-directory.git)
+   git clone https://github.com/salsabilaf19/prospera-contact-directory.git
    cd prospera-contact-directory
 
 2. Create and activate a virtual environment:
