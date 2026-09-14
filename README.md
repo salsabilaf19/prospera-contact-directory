@@ -25,15 +25,20 @@ The **Prospera Inquiry Portal** is a provides a public facing portal for institu
    cd prospera-contact-directory
 
 2. Create and activate a virtual environment:
+    ```bash
     python3 -m venv venv
     source venv/bin/activate
     # On Windows use: venv\Scripts\activate
-3. Install dependencies:
-    pip install fastapi uvicorn "pydantic[email-validator]"
-4. Start the development server:
-    uvicorn main:app --reload
 
+3. Install dependencies:
+    ```bash
+    pip install fastapi uvicorn "pydantic[email-validator]"
+
+4. Start the development server:
+    ```bash
+    uvicorn main:app --reload
     (Note: The SQLite database file contacts.db will automatically be generated on application startup).
+    
 5. Access the application:
     Open your browser and navigate to http://127.0.0.1:8000
 
